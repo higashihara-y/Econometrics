@@ -31,7 +31,7 @@ b0
 
 
 # 4-2-2
-# 均一分散の手動算出
+# 不均一分散の手動算出
 v1_num <- (1 / (nrow(exc2) - 2)) * 
   (sum(
     (exc2$`ln(2013_pop)` - mean(exc2$`ln(2013_pop)`))^2
@@ -47,7 +47,7 @@ v1 <- v1_num / v1_denom
 se_b1 <- sqrt(v1 / nrow(exc2))
 se_b1
 
-# 不均一分散の手動算出
+# 均一分散の手動算出
 v1_2_num <- (1 / (nrow(exc2) - 2)) *
   sum(resid(model1)^2)
 
@@ -62,8 +62,11 @@ t <- (b1 - 1) / se_b1_2
 t
 
 # 4-2-3
-b1 - se_b1_2 * qt(0.95, nrow(exc2)) 
-b1 + se_b1_2 * qt(0.95, nrow(exc2)) 
+confint(model1, '(Intercept)', 0.90)
+# b1 - se_b1_2 * qt(0.95, nrow(exc2)) 
+# b1 + se_b1_2 * qt(0.95, nrow(exc2)) 
+
+
 
 # 4-2-4
 # 人口が1%増加すると、GDPは1.08%増加する。
@@ -72,5 +75,54 @@ b1 + se_b1_2 * qt(0.95, nrow(exc2))
 # 4-2-5
 var_u <- var(resid(model1))
 var_lnpop <- var(exc2$`ln(2013_pop)`)
+
+
+# 4-3
+# x,y共にlog化しない場合、xの単位を100倍すると、b0は変わらず、biは1/100になる
+# x,y共にlog化する場合、xの単位を100倍すると、b0,b1ともに変わらない
+# x,y共にlog化しない場合、yの単位を100倍すると、b0,biともに100倍になる
+# x,y共にlog化する場合、yの単位を100倍すると、b0はlog(100)～約4.60大きくなり,b1は変わらない
+
+
+# 4-5
+# 定数項なしの場合のb1の推定公式を使用
+b1_5 <- sum(exc2$`ln(2013_pop)` * exc2$`ln(2013GDP)`) / 
+  sum(exc2$`ln(2013_pop)`^2)
+b1_5
+
+
+# 4-6
+# 均一分散の前提で分散、t値を算出
+v1_6_num <- (1 / (nrow(exc2) - 2)) *
+  sum((exc2$`ln(2013GDP)` - b1_5 * exc2$`ln(2013_pop)`)^2)
+
+v1_6_denom <- (1 / nrow(exc2)) *
+  sum((exc2$`ln(2013_pop)` - mean(exc2$`ln(2013_pop)`))^2)
+
+v1_6 <- v1_6_num / v1_6_denom
+se_b1_6 <- sqrt(v1_6 / nrow(exc2))
+se_b1_6
+
+t2 <- (b1_5 - 1) / se_b1_6
+t2
+
+
+# 4-9
+model2 <- lm(exc2$`ln(2013_pop)` ~ exc2$`ln(2013GDP)`)
+summary(model2)
+a1 <- 1 / model1$coefficients[2]
+a1
+a0 <- - (model1$coefficients[1] / model1$coefficients[2])
+a0
+
+
+# 4-10
+
+
+
+
+
+
+
 
 
