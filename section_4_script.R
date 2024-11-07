@@ -117,12 +117,46 @@ a0
 
 
 # 4-10
+data410 <- read_excel("data for chap 4 exercise 10.xlsx")
+
+# 4-10-1
+model410 <- lm(Y ~ X, data = data410)
+summary(model410)
+cov(model410$residuals, data410$X)
+cov(resid(model410), data410$X)
+
+# u1 <- data410$Y - 1 - data410$X
+# cov(u1, data410$X)
+# sum((u1 - mean(u1)) * (data410$X - mean(data410$X))) / (nrow(data410) - 1)
+
+# 4-10-2
+mean(resid(model410)^2)
+plot(data410$X, resid(model410))
+abline(h = 0)
+
+model410 |> 
+  ggplot(aes(x = X, y = .resid)) + 
+  geom_point() +
+  geom_hline(yintercept = 0, color = "blue", lty = "dashed")
 
 
+# 4-10-3
+pacman::p_load(estimatr)
+model410_rb <- estimatr::lm_robust(Y ~ X, data = data410)
+summary(model410_rb)
+confint(model410_rb, 'X', level = 0.95)
 
+model410_rb$coefficients[2] - 
+  model410_rb$std.error[2] * qt(0.975, nrow(data410) - 2)
+model410_rb$coefficients[2] + 
+  model410_rb$std.error[2] * qt(0.975, nrow(data410) - 2)
 
+# 4-10-4
+summary(model410)
+confint(model410, "X", level = 0.95)
 
-
+# 4-10-5
+# 分散が均一ではないデータに均一分散の標準誤差を適用すると、標準誤差が大きく算出され、推定の効率性が低下する可能性がある。
 
 
 
